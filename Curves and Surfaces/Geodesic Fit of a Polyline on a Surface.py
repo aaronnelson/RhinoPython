@@ -137,8 +137,6 @@ def geodesicCurve():
     if not surface:
         return
     
-    maxLines = rs.GetReal("Enter Maximum Number of Segments", 500, 10, 1000)
-    
     #get the vertices for the shortest r2 path with 10 sample points
     vertices = getr2PathOnSurface(surface, 10, "Start Point for Curve", "End Point for Curve")
     if not vertices:
@@ -162,7 +160,7 @@ def geodesicCurve():
             break
         #if for some reason we still haven't found a solution and have over 1000
         #vertices we should also go
-        if len(vertices) > maxLines + 1:
+        if len(vertices) > 1000:
             break
         
         #subdivide the polyline to double the number of samples and get ready to
