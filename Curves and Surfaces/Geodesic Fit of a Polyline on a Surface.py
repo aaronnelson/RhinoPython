@@ -51,7 +51,9 @@ def getr2PathOnSurface(surface, segments, prompt1, prompt2):
     #needs to follow the contours of the surface.  We divide the straight path into
     #segments and check each vertex of the segments and find the closest corrisponding point
     #on the surface itself
-    for i in range(segments):
+    #range is non inclusive in python, I had to add 1 here to get the last point to align
+    #with the last point selected
+    for i in range(segments + 1):
         
         #we will decompose the UV r2 space into U and V r1 spaces and find where we
         #are using a single parameter at each segment vertex
@@ -131,12 +133,14 @@ def geodesicFit(vertices, surface, tolerence):
 #main subroutine that puts it all together
 def geodesicCurve():
     #get a surface
-    surface = rs.GetObject("Sel Srf", 8, True, True)
+    surface = rs.GetObject("Select Surface to Fit Curve", 8, True, True)
     if not surface:
         return
     
+    maxLines = rs.GetReal("Enter Maximum Number of Segments", 500, 10, 1000)
+    
     #get the vertices for the shortest r2 path with 10 sample points
-    vertices = getr2PathOnSurface(surface, 10, "Start", "End")
+    vertices = getr2PathOnSurface(surface, 10, "Start Point for Curve", "End Point for Curve")
     if not vertices:
         return
     
@@ -158,7 +162,7 @@ def geodesicCurve():
             break
         #if for some reason we still haven't found a solution and have over 1000
         #vertices we should also go
-        if len(vertices) > 1000:
+        if len(vertices) > maxLines + 1:
             break
         
         #subdivide the polyline to double the number of samples and get ready to
@@ -173,6 +177,7 @@ def geodesicCurve():
 #run the damn thing
 def main():
     geodesicCurve()
+    
     
 if __name__ == "__main__":
     main()
